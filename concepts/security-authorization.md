@@ -4,15 +4,15 @@ Security data accessible via the security API in Microsoft Graph is sensitive an
 
 The security API supports two types of authorization:
 
-**Application-level authorization** - There is no signed-in user (for example, a SIEM scenario). The permissions granted to the application determine authorization. </br>Note: this option can also support cases where _Role-Based Access Control_ (aka RBAC) is managed by the application.
-**User delegated authorization**- A user who is a member of the Azure AD tenant is signed in. The user must be a member of an Azure AD Limited Admin role - either _Security Reader_ or _Securty Administrator_, in addition to the application having been granted the required permissions.
+- **Application-level authorization** - There is no signed-in user (for example, a SIEM scenario). The permissions granted to the application determine authorization. </br>Note: this option can also support cases where _Role-Based Access Control_ (aka RBAC) is managed by the application.
+- **User delegated authorization** - A user who is a member of the Azure AD tenant is signed in. The user must be a member of an Azure AD Limited Admin role - either _Security Reader_ or _Securty Administrator_, in addition to the application having been granted the required permissions.
 
 If you're calling the security API from Graph Explorer:
 
 - The Azure AD tenant admin must explicitly grant consent for the requested permissions to the Graph Explorer application.
 - The user must be a member of the Security Reader Limited Admin role in Azure AD (either _Security Reader_ or _Security Administrator_).
 
-> **Note**: Graph Explorer does not support application-level authorization.
+>**Note**: Graph Explorer does not support application-level authorization.
 
 If you're calling the security API from a custom or your own application:
 
@@ -30,70 +30,72 @@ Security data provided via the security API in Microsoft Graph is sensitive and 
 |Tenant admin|Assign roles to users.|
 |Application developer|Sign in as the user and use the application to access the security API.|
 
-**To clarify:**
+**Application registration** only defines which permissions the application needs in order to run. It does NOT grant these permissions to the application.
 
-- **Application registration** only defines which permissions the application needs in order to run. </br>It does NOT grant these permissions to the application.
-- The Azure AD tenant administrator MUST explicitly grant the permissions to the application. </br>This MUST be done per tenant and **performed every time** the application permissions are changed in the application registration portal.
-- Let’s assume we have: an application: **App**, two AAD tenants: **T1** and **T2**, and two scopes, or permissions: **P1** and **P2**.
-    - Application **App** registered to require permission **P1**.
-    - When users in tenant **T1** get an AAD token for this application, the token does not contain any permissions (see next bullet).
-    - The AAD Admin of tenant **T1** explicitly grants permissions to the application **App**. From this moment on, when users in tenant **T1** get an AAD token for **App**, it will contain permission **P1**.
-    - When users in tenant **T2** get an AAD token for application **App**, the token does not contain any permissions - because the admin of tenant **T2** did not yet grant permissions to **App**. </br>The procedure of granting permission must be performed **per tenant** and **per application**.
-    - The application **App** has its registration changed to now require permissions **P1** and **P2**.
-    - When users in tenant **T1** get an AAD token for **App**, it only contains permission **P1**. Permissions granted to an application are recorded as snapshots of what was granted - </br>they **do not change automatically** after the application registration (permission) changes.
-    - The admin of tenant **T2** grants permissions **P1** and **P2** to the application **App**. </br>From this moment on, when users in tenant **T2** get AAD token for **App**, the token will contain permissions **P1** and **P2**.
+The Azure AD tenant administrator MUST explicitly grant the permissions to the application. This must be done per tenant and **performed every time** the application permissions are changed in the application registration portal.
 
-**Note**: for the same application (**App**), the AAD token for the application in tenant **T1** and that for the application in tenant **T2** contains different permissions, since each tenant admin has granted different permissions to the application (**App**).
+For example, assume that you have an application, two Azure AD tenants, **T1** and **T2**, and two permissions, **P1** and **P2**. The following is the authorization process:
 
-- To make **App** work again in tenant **T1**, the admin of tenant **T1** must explicitly grant permissions **P1** and **P2** to the application (**App**).
+- The application registers to require permission **P1**.
+- When users in tenant **T1** get an Azure AD token for this application, the token does not contain any permissions.
+- The Azure AD admin of tenant **T1** explicitly grants permissions to the application. When users in tenant **T1** get an Azure AD token for the application, it will contain permission **P1**.
+- When users in tenant **T2** get an Azure AD token for the application, the token does not contain any permissions - because the admin of tenant **T2** did not yet grant permissions to the application. Permission must be granted **per tenant** and **per application**.
+- The application has its registration changed to now require permissions **P1** and **P2**.
+- When users in tenant **T1** get an Azure AD token for the application, it only contains permission **P1**. Permissions granted to an application are recorded as snapshots of what was granted - they **do not change automatically** after the application registration (permission) changes.
+- The admin of tenant **T2** grants permissions **P1** and **P2** to the application. Now, when users in tenant **T2** get an Azure AD token for the application, the token will contain permissions **P1** and **P2**.
 
-## Register an Application in v2.0 endpoint
+>**Note**: The Azure AD tokens for the application in tenant **T1** and the application in tenant **T2** contain different permissions, because each tenant admin has granted different permissions to the application.
 
-[Reference link](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-v2-app-registration)
+- To make the application work again in tenant **T1**, the admin of tenant **T1** must explicitly grant permissions **P1** and **P2** to the application.
 
-### What you need:
+## Register an application in the Azure AD v2.0 endpoint
 
-**Application Name:** a string used for the application name.</br>
-**Redirect URL:** where the authentication response from AAD is sent.</br>
-To begin with, you can use the test client web app homepage.</br>
-**Required Permissions:** the permissions that your application requires to be able to call Microsoft Graph.
+For details, see [Register your app with the Azure AD v2.0 endpoint](../concepts/auth_register_app_v2.md).
 
-### What you need to do:
+To register an application to the Azure AD v2.0 endpoint, you'll need:
 
-1. Go to https://apps.dev.microsoft.com/ and sign in.</br>**Note**: there is no need to be a tenant admin. You will be redirected to “My applications” list.
-2. Click the “**Add an app**” button, and enter an Application Name to create a new application.
-3. It will navigate to the registration page for the new application. </br>Click “**Add Platform**”, choose “**Web**”. In the Redirect URL, enter the Redirect URL.
-4. Go to section “**Microsoft Graph Permissions**” and under “**Delegated Permissions**”, click the “**Add**” button. A popup dialog appears; choose required permissions (aka scopes).</br>See this [document](https://developer.microsoft.com/en-us/graph/docs/concepts/permissions_reference#security-permissions) for detailed scopes. The Microsoft Graph Security API requires “SecurityEvents.Read.All” scope for GET queries, and “SecurityEvents.ReadWrite.All” scope for PATCH/POST queries.
-5. Scroll down to the bottom of the page and click on the “**Save**” button
+- **Application Name** - A string used for the application name.
+- **Redirect URL** - The URL where the authentication response from Azure AD is sent. To start, you can use the test client web app homepage.
+- **Required Permissions** - The permissions that your application requires to be able to call Microsoft Graph.
 
-### What to save for future steps:
+To register your application:
 
-- Application Id
+1. Go to https://apps.dev.microsoft.com/ and sign in.
+    >**Note**: You don't have to be a tenant admin. You will be redirected to the **My applications** list.
+2. Choose **Add an app**, and enter an **Application Name** to create a new application.
+3. On the registration page for the new application, choose **Add Platform** > **Web**. In the **Redirect URL** field, enter the redirect URL.
+4. In the **Microsoft Graph Permissions** section, under **Delegated Permissions**, choose **Add**. In the dialog box, choose the required permissions. For a list of permissions, see [Security permissions](../concepts/permissions_reference.md#security-permissions). The security API requires the SecurityEvents.Read.All scope for GET queries, and the SecurityEvents.ReadWrite.All scope for PATCH/POST queries.
+5. Choose **Save**.
+
+Save the following information:
+
+- Application ID
 - Redirect URL
 - List of required permissions
 
-## Granting Permissions to an Application
+## Granting permissions to an application
 
-Application registration only defines which permission the application requires - it does not grant these permissions to the application. An Azure AD tenant administrator must explicitly grant these permissions by making a call to the admin consent endpoint. </br>[Reference link](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-v2-scopes#using-the-admin-consent-endpoint)
+Application registration only defines which permission the application requires - it does not grant these permissions to the application. An Azure AD tenant administrator must explicitly grant these permissions by making a call to the admin consent endpoint. For details, see [Using the admin consent endpoint](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-v2-scopes#using-the-admin-consent-endpoint).
 
-### What you need:
+To grant permissions to an application, you'll need:
 
-**Application Id:** the application ID from application registration portal</br>
-**Redirect URL:** the string you set in the application registration portal for authentication response
+- **Application ID** - The application ID from application registration portal.
+- **Redirect URL** - The string you set in the application registration portal for authentication response.
 
-### What you need to do:
+To grant the permissions:
 
-In a text editor, create following URL string:
+- In a text editor, create following URL string:
 
-`https://login.microsoftonline.com/common/adminconsent?client_id=<Application Id>&state=12345&redirect_uri=<Redirect URL>`
+    `https://login.microsoftonline.com/common/adminconsent?client_id=<Application Id>&state=12345&redirect_uri=<Redirect URL>`
 
-In a web browser, navigate to this URL, and sign in as a tenant administrator; the popup dialog shows the list of permission the application requires, as specified in the application registration portal. </br>Click “**OK**” to grant the application these permissions.
+- In a web browser, go to this URL, and sign in as a tenant administrator. The dialog box shows the list of permission the application requires, as specified in the application registration portal. 
+Choose **OK** to grant the application these permissions.
 
-> **Note:** this step grants permissions to the application - not to users. This means that all users belonging to the AAD tenant that using this application will be granted these permissions - even non-admin users.
+> **Note:** This step grants permissions to the application - not to users. This means that all users belonging to the Azure AD tenant that use this application will be granted these permissions - even non-admin users.
 
-## Assigning AAD roles to users
+## Assigning Azure AD roles to users
 
-Once an application is granted permissions, everyone with access to the application (that is, members of the AAD tenant) will receive the granted permissions. To further protect sensitive security data, the Microsoft Graph Security API also requires users be assigned the Azure AD **Security Reader** role. </br>Reference links: [admin role](https://docs.microsoft.com/en-us/azure/active-directory/active-directory-assign-admin-roles-azure-portal),  [assign roles](https://docs.microsoft.com/en-us/azure/active-directory/active-directory-users-assign-role-azure-portal).
+After an application is granted permissions, everyone with access to the application (that is, members of the Azure AD tenant) will receive the granted permissions. To further protect sensitive security data, the security API also requires users to be assigned the Azure AD **Security Reader** role. For details, see [Assigning administrator roles](https://docs.microsoft.com/en-us/azure/active-directory/active-directory-assign-admin-roles-azure-portal) and [Assign a user to adminstrator roles](https://docs.microsoft.com/en-us/azure/active-directory/active-directory-users-assign-role-azure-portal).
 
 ### What you need:
 
