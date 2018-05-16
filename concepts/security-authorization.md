@@ -97,61 +97,54 @@ Choose **OK** to grant the application these permissions.
 
 After an application is granted permissions, everyone with access to the application (that is, members of the Azure AD tenant) will receive the granted permissions. To further protect sensitive security data, the security API also requires users to be assigned the Azure AD **Security Reader** role. For details, see [Assigning administrator roles](https://docs.microsoft.com/en-us/azure/active-directory/active-directory-assign-admin-roles-azure-portal) and [Assign a user to adminstrator roles](https://docs.microsoft.com/en-us/azure/active-directory/active-directory-users-assign-role-azure-portal).
 
-### What you need:
+>**Note:** You must be a tenant admin to perform this step.
 
-A tenant admin must perform this step.
+To assign roles to users:
 
-### What you need to do:
-
-The admin must:
-
-- Sign in to [azure portal](https://portal.azure.com/#@isgdemodev.onmicrosoft.com/dashboard/private/76e81922-1bdf-455e-bdbb-33ff73765011) (http://portal.azure/com).
+- Sign in to the [azure portal](https://portal.azure.com/#@isgdemodev.onmicrosoft.com/dashboard/private/76e81922-1bdf-455e-bdbb-33ff73765011) (http://portal.azure/com).
 - In the menu, select **Azure Active Directory** > **Users**.
 - Select the name of the desired user.
 - Select **Manage** > **Directory role**.
-- Select “Limited administrator”, check the checkbox “Security reader”.
-- Click on the “**Save**” button to save the change.
+- Select **Limited administrator**, and choose the **Security reader** check box.
+- Choose **Save**.
 
 ## Create an authentication code
 
-[Reference link](https://developer.microsoft.com/en-us/graph/docs/concepts/auth_v2_user)
+For details, see [Get access on behalf of a user](../concepts/auth_v2_user.md).
 
-### What you need:
+To create an authentication code, you'll need:
 
-**Application ID:** the application ID from application registration portal.</br>
-**Redirect URL:** where the authentication response from AAD is sent to. </br>To begin, you can use http://localhost or the test client web app homepage.</br>
-**Application Key** (optional): the key of the application, used when developing an application that will use application-only authentication code (i.e. will not support user delegated authentication)
+- **Application ID** - The application ID from application registration portal.
+- **Redirect URL** - The URL where the authentication response from Azure AD is sent. To start, you can use http://localhost or the test client web app homepage.
+- **Application Key** (optional) - The key of the application. This applies when you're developing an application that will use application-only authentication code (that is, will not support user delegated authentication).
 
-### What you need to do:
+The following table lists resources that you can use to create an authentication code.
 
-There are code samples demonstrating on how to get authentication tokens for in various kinds of applications, authentication libraries are also provided.
-
-|**Type of applications**|**Authentication Library**|
+|**Type of application**|**Authentication library**|
 |------------------------|----------------------------|
 |[Desktop apps - iOS](https://docs.microsoft.com/en-us/azure/active-directory/develop/guidedsetups/active-directory-ios)|[MSAL.framework: Microsoft Authentication Library Preview for iOS](https://github.com/AzureAD/microsoft-authentication-library-for-objc)|
 |[Desktop apps - Android](https://docs.microsoft.com/en-us/azure/active-directory/develop/guidedsetups/active-directory-android)|[Microsoft Authentication Library (MSAL)](http://javadoc.io/doc/com.microsoft.identity.client/msal)|
 |[Desktop apps - .Net](https://docs.microsoft.com/en-us/azure/active-directory/develop/guidedsetups/active-directory-windesktop)|[Microsoft Authentication Library (MSAL)](https://www.nuget.org/packages/Microsoft.Identity.Client)|
 |[Web apps - JavaScript SPA](https://docs.microsoft.com/en-us/azure/active-directory/develop/guidedsetups/active-directory-javascriptspa)|[Microsoft Authentication Library for JavaScript Preview](https://github.com/AzureAD/microsoft-authentication-library-for-js)|
-|[Web apps - .Net Web Server](https://docs.microsoft.com/en-us/azure/active-directory/develop/guidedsetups/active-directory-aspnetwebapp)|OpenIdConnection, Cookies, SystemWeb|
+|[Web apps - .NET Web Server](https://docs.microsoft.com/en-us/azure/active-directory/develop/guidedsetups/active-directory-aspnetwebapp)|OpenIdConnection, Cookies, SystemWeb|
 |[Web apps - NodeJS Web App](https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-v2-devquickstarts-node-web)||
 
-If the applications do not use any of the existing libraries, please follow this [doc](https://developer.microsoft.com/en-us/graph/docs/concepts/auth_v2_user).
+For applications that don't use any of the existing libraries, see [Get access on behalf of a user](../concepts/auth_v2_user.md).
 
-1. Get a code from AAD. The query to call contains parameter for Application ID, Redirect URl, and **required permissions**.
+1. Get a code from Azure AD. The query to call contains parameter for Application ID, Redirect URl, and **required permissions**.
 2. Use the code to get an access token.
 
-If you use OpenId Connect library, please see this [doc](https://docs.microsoft.com/en-us/azure/architecture/multitenant-identity/authenticate) and call</br> `app.UseOpenIdConnectAuthentication()`
-> **Note:** In the library, when requesting user delegated authentication tokens, the parameter for the library is “Requested Scopes”. Use “User.Read” for this parameter instead of using whatever the registered application requires. The “Requested Scopes” parameter does NOT affect the permissions contained in the returned authentication tokens, since these are determined by the permissions that the tenant admin granted the application.
+If you use OpenId Connect library, see [Authenticate using Azure AD and OpenID Connect](https://docs.microsoft.com/en-us/azure/architecture/multitenant-identity/authenticate) and call `app.UseOpenIdConnectAuthentication()`.
 
-Using .Net MSAL library as example:
+>**Note:** If you're requesting user delegated authentication tokens, the parameter for the library is **Requested Scopes**. Use User.Read for this parameter instead of what the registered application requires. The **Requested Scopes** parameter does NOT affect the permissions contained in the returned authentication tokens. These are determined by the permissions that the tenant admin granted the application.
+
+For example, if you're using the .NET MSAL library, call the following:
 
 `var accessToken = (await client.AcquireTokenAsync(scopes)).AccessToken;`
 
-> Note that scopes in above example should be minimum permission such as “User.Read”. However the returned access token can contain scopes such as “User.Read.All” or “User.ReadWrite.All” which were granted by tenant admin for current user tenant.
+>**Note:** This example should use the least privileged permission, such as User.Read. However, the returned access token can contain permissions that were granted by the tenant admin for the current user tenant, such as User.Read.All or User.ReadWrite.All.
 
-### What You receive:
-
-A token (string) is returned by AAD that contains your authentication info and the permissions required by the application. Assign this token to the HTTP header as a bearer token, as in the code below:
+A token (string) is returned by Azure AD that contains your authentication information and the permissions required by the application. Assign this token to the HTTP header as a bearer token, as in the following example.
 
 `request.Headers.Authorization = new AuthenticationHeaderValue("bearer", accessToken);`
 
@@ -162,6 +155,4 @@ To view claims contained in the returned token, use NuGet library System.Identit
 `JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();`</br>
 `var securityToken = tokenHandler.ReadToken(accessToken) as JwtSecurityToken;`
 
-### In case you encounter an Authentication failure
-
-The response from Microsoft Graph contains a header called client-request-id, which is a GUID.</br> If access is denied, please specify this GUID when seeking support, so we can help investigate the cause of this authentication failure.
+The response from Microsoft Graph contains a header called client-request-id, which is a GUID. If access is denied, please specify this GUID when seeking support, so we can help investigate the cause of this authentication failure.
