@@ -4,20 +4,21 @@ Security data accessible via the security API in Microsoft Graph is sensitive an
 
 The security API supports two types of authorization:
 
-- **Application-level authorization** - There is no signed-in user (for example, a SIEM scenario). The permissions granted to the application determine authorization. </br>Note: this option can also support cases where _Role-Based Access Control_ (aka RBAC) is managed by the application.
-- **User delegated authorization** - A user who is a member of the Azure AD tenant is signed in. The user must be a member of an Azure AD Limited Admin role - either _Security Reader_ or _Securty Administrator_, in addition to the application having been granted the required permissions.
+- **Application-level authorization** - There is no signed-in user (for example, a SIEM scenario). The permissions granted to the application determine authorization. 
+    >**Note:** This option can also support cases where Role-Based Access Control (RBAC) is managed by the application.
+- **User delegated authorization** - A user who is a member of the Azure AD tenant is signed in. The user must be a member of an Azure AD Limited Admin role - either Security Reader or Securty Administrator - in addition to the application having been granted the required permissions.
 
 If you're calling the security API from Graph Explorer:
 
 - The Azure AD tenant admin must explicitly grant consent for the requested permissions to the Graph Explorer application.
-- The user must be a member of the Security Reader Limited Admin role in Azure AD (either _Security Reader_ or _Security Administrator_).
+- The user must be a member of the Security Reader Limited Admin role in Azure AD (either Security Reader or Security Administrator).
 
 >**Note**: Graph Explorer does not support application-level authorization.
 
 If you're calling the security API from a custom or your own application:
 
 - The Azure AD tenant admin must explicitly grant consent to your application. This is required both for application-level authorization and user delegated authorization.
-- If you're using user delegated authorization, the user must be a member of the _Security Reader_ or _Security Administrator_ Limited Admin role in Azure AD.
+- If you're using user delegated authorization, the user must be a member of the Security Reader or Security Administrator Limited Admin role in Azure AD.
 
 ## Managing authorization in security API client applications
 
@@ -25,23 +26,23 @@ Security data provided via the security API in Microsoft Graph is sensitive and 
 
 | **Who** | **Action** |
 |:---------------------|:------------------|
-|Application developer or owner|Register application as an enterprise application.|
+|Application developer or owner|Register the application as an enterprise application.|
 |Tenant admin|Grant permissions to the application.|
 |Tenant admin|Assign roles to users.|
 |Application developer|Sign in as the user and use the application to access the security API.|
 
-**Application registration** only defines which permissions the application needs in order to run. It does NOT grant these permissions to the application.
+Application registration only defines which permissions the application needs in order to run. It does NOT grant these permissions to the application.
 
-The Azure AD tenant administrator MUST explicitly grant the permissions to the application. This must be done per tenant and **performed every time** the application permissions are changed in the application registration portal.
+The Azure AD tenant administrator MUST explicitly grant the permissions to the application. This must be done per tenant and must be *performed every time* the application permissions are changed in the application registration portal.
 
 For example, assume that you have an application, two Azure AD tenants, **T1** and **T2**, and two permissions, **P1** and **P2**. The following is the authorization process:
 
 - The application registers to require permission **P1**.
 - When users in tenant **T1** get an Azure AD token for this application, the token does not contain any permissions.
 - The Azure AD admin of tenant **T1** explicitly grants permissions to the application. When users in tenant **T1** get an Azure AD token for the application, it will contain permission **P1**.
-- When users in tenant **T2** get an Azure AD token for the application, the token does not contain any permissions - because the admin of tenant **T2** did not yet grant permissions to the application. Permission must be granted **per tenant** and **per application**.
+- When users in tenant **T2** get an Azure AD token for the application, the token does not contain any permissions - because the admin of tenant **T2** did not yet grant permissions to the application. Permission must be granted *per tenant* and *per application*.
 - The application has its registration changed to now require permissions **P1** and **P2**.
-- When users in tenant **T1** get an Azure AD token for the application, it only contains permission **P1**. Permissions granted to an application are recorded as snapshots of what was granted - they **do not change automatically** after the application registration (permission) changes.
+- When users in tenant **T1** get an Azure AD token for the application, it only contains permission **P1**. Permissions granted to an application are recorded as snapshots of what was granted - they *do not change automatically* after the application registration (permission) changes.
 - The admin of tenant **T2** grants permissions **P1** and **P2** to the application. Now, when users in tenant **T2** get an Azure AD token for the application, the token will contain permissions **P1** and **P2**.
 
 >**Note**: The Azure AD tokens for the application in tenant **T1** and the application in tenant **T2** contain different permissions, because each tenant admin has granted different permissions to the application.
@@ -50,11 +51,9 @@ For example, assume that you have an application, two Azure AD tenants, **T1** a
 
 ## Register an application in the Azure AD v2.0 endpoint
 
-For details, see [Register your app with the Azure AD v2.0 endpoint](../concepts/auth_register_app_v2.md).
-
 To register an application to the Azure AD v2.0 endpoint, you'll need:
 
-- **Application Name** - A string used for the application name.
+- **Application name** - A string used for the application name.
 - **Redirect URL** - The URL where the authentication response from Azure AD is sent. To start, you can use the test client web app homepage.
 - **Required Permissions** - The permissions that your application requires to be able to call Microsoft Graph.
 
@@ -64,7 +63,10 @@ To register your application:
     >**Note**: You don't have to be a tenant admin. You will be redirected to the **My applications** list.
 2. Choose **Add an app**, and enter an **Application Name** to create a new application.
 3. On the registration page for the new application, choose **Add Platform** > **Web**. In the **Redirect URL** field, enter the redirect URL.
-4. In the **Microsoft Graph Permissions** section, under **Delegated Permissions**, choose **Add**. In the dialog box, choose the required permissions. For a list of permissions, see [Security permissions](../concepts/permissions_reference.md#security-permissions). The security API requires the SecurityEvents.Read.All scope for GET queries, and the SecurityEvents.ReadWrite.All scope for PATCH/POST queries.
+4. In the **Microsoft Graph Permissions** section, under **Delegated Permissions**, choose **Add**. In the dialog box, choose the required permissions. For a list of permissions, see [Security permissions](../concepts/permissions_reference.md#security-permissions).
+
+    >The security API requires the SecurityEvents.Read.All scope for GET queries, and the SecurityEvents.ReadWrite.All scope for PATCH/POST queries.
+
 5. Choose **Save**.
 
 Save the following information:
@@ -72,6 +74,8 @@ Save the following information:
 - Application ID
 - Redirect URL
 - List of required permissions
+
+For more information, see [Register your app with the Azure AD v2.0 endpoint](../concepts/auth_register_app_v2.md).
 
 ## Granting permissions to an application
 
@@ -103,14 +107,12 @@ To assign roles to users:
 
 - Sign in to the [azure portal](https://portal.azure.com/#@isgdemodev.onmicrosoft.com/dashboard/private/76e81922-1bdf-455e-bdbb-33ff73765011) (http://portal.azure/com).
 - In the menu, select **Azure Active Directory** > **Users**.
-- Select the name of the desired user.
+- Select the name of the user.
 - Select **Manage** > **Directory role**.
 - Select **Limited administrator**, and choose the **Security reader** check box.
 - Choose **Save**.
 
 ## Create an authentication code
-
-For details, see [Get access on behalf of a user](../concepts/auth_v2_user.md).
 
 To create an authentication code, you'll need:
 
@@ -144,7 +146,7 @@ For example, if you're using the .NET MSAL library, call the following:
 
 >**Note:** This example should use the least privileged permission, such as User.Read. However, the returned access token can contain permissions that were granted by the tenant admin for the current user tenant, such as User.Read.All or User.ReadWrite.All.
 
-A token (string) is returned by Azure AD that contains your authentication information and the permissions required by the application. Assign this token to the HTTP header as a bearer token, as in the following example.
+A token (string) is returned by Azure AD that contains your authentication information and the permissions required by the application. Assign this token to the HTTP header as a bearer token, as shown in the following example.
 
 `request.Headers.Authorization = new AuthenticationHeaderValue("bearer", accessToken);`
 
