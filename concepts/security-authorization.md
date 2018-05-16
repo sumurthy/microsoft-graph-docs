@@ -1,27 +1,27 @@
 # Authorization and the security API in Microsoft Graph
 
-Security data that's accessible via the security API in Microsoft Graph is sensitive and is protected by both permissions and Azure Active Directory (Azure AD) roles.
+Security data accessible via the security API in Microsoft Graph is sensitive and is protected by both permissions and Azure Active Directory (Azure AD) roles.
 
 The security API supports two types of authorization:
 
-- **Application-level authorization** - There is no signed-in user (for example, a SIEM scenario). The permissions granted to the application determine authorization.
-- **User delegated authorization** - A user who is a member of the Azure AD tenant is signed in. The user must be a member of the Azure AD Security Reader Limited Admin role, in addition to the application having been granted the required permissions.
+**Application-level authorization** - There is no signed-in user (for example, a SIEM scenario). The permissions granted to the application determine authorization. </br>Note: this option can also support cases where _Role-Based Access Control_ (aka RBAC) is managed by the application.
+**User delegated authorization**- A user who is a member of the Azure AD tenant is signed in. The user must be a member of an Azure AD Limited Admin role - either _Security Reader_ or _Securty Administrator_, in addition to the application having been granted the required permissions.
 
 If you're calling the security API from Graph Explorer:
 
 - The Azure AD tenant admin must explicitly grant consent for the requested permissions to the Graph Explorer application.
-- The user must be a member of the Security Reader Limited Admin role in Azure AD.
+- The user must be a member of the Security Reader Limited Admin role in Azure AD (either _Security Reader_ or _Security Administrator_).
 
 > **Note**: Graph Explorer does not support application-level authorization.
 
 If you're calling the security API from a custom or your own application:
 
 - The Azure AD tenant admin must explicitly grant consent to your application. This is required both for application-level authorization and user delegated authorization.
-- The user must be a member of the Security Reader Limited Admin role in Azure AD, if you're using user delegated authorization.
+- If you're using user delegated authorization, the user must be a member of the _Security Reader_ or _Security Administrator_ Limited Admin role in Azure AD.
 
 ## Managing authorization in security API client applications
 
-Security data provided via the ecurity API in Microsoft Graph is sensitive and must be protected by appropriate authentication and authorization mechanisms. The following table lists the steps to register and create a client application that can access the security API.
+Security data provided via the security API in Microsoft Graph is sensitive and must be protected by appropriate authentication and authorization mechanisms. The following table lists the steps to register and create a client application that can access the security API.
 
 | **Who** | **Action** |
 |:---------------------|:------------------|
@@ -32,32 +32,20 @@ Security data provided via the ecurity API in Microsoft Graph is sensitive and m
 
 **To clarify:**
 
-<style>
-  .blue {
-    color:rgb(0,0,255);
-  }
-  .green {
-    color:rgb(0,128,0);
-  }
-  .red {
-    color:rgb(128,0,0);
-  }
-</style>
-
 - **Application registration** only defines which permissions the application needs in order to run. </br>It does NOT grant these permissions to the application.
 - The Azure AD tenant administrator MUST explicitly grant the permissions to the application. </br>This MUST be done per tenant and **performed every time** the application permissions are changed in the application registration portal.
-- Let’s assume we have: an application: <b class=blue>App</b>, two AAD tenants: <b class=green>T1</b> and <b class=green>T2</b>, and two scopes, or permissions: <b class=red>P1</b> and <b class=red>P2</b>.
-    - Application <b class=blue>App</b> registered to require permission <b class=red>P1</b>.
-    - When users in tenant <b class=green>T1</b> get an AAD token for this application, the token does not contain any permissions (see next bullet).
-    - The AAD Admin of tenant <b class=green>T1</b> explicitly grants permissions to the application <b class=blue>App</b>. From this moment on, when users in tenant <b class=green>T1</b> get an AAD token for <b class=blue>App</b>, it will contain permission <b class=red>P1</b>.
-    - When users in tenant <b class=green>T2</b> get an AAD token for application <b class=blue>App</b>, the token does not contain any permissions - because the admin of tenant <b class=green>T2</b> did not yet grant permissions to <b class=blue>App</b>. </br>The procedure of granting permission must be performed **per tenant** and **per application**.
-    - The application <b class=blue>App</b> has its registration changed to now require permissions <b class=red>P1</b> and <b class=red>P2</b>.
-    - When users in tenant <b class=green>T1</b> get an AAD token for <b class=blue>App</b>, it only contains permission <b class=red>P1</b>. Permissions granted to an application are recorded as snapshots of what was granted - </br>they **do not change automatically** after the application registration (permission) changes.
-    - The admin of tenant <b class=green>T2</b> grants permissions <b class=red>P1</b> and <b class=red>P2</b> to the application <b class=blue>App</b>. </br>From this moment on, when users in tenant <b class=green>T2</b> get AAD token for <b class=blue>App</b>, the token will contain permissions <b class=red>P1</b> and <b class=red>P2</b>.
+- Let’s assume we have: an application: **App**, two AAD tenants: **T1** and **T2**, and two scopes, or permissions: **P1** and **P2**.
+    - Application **App** registered to require permission **P1**.
+    - When users in tenant **T1** get an AAD token for this application, the token does not contain any permissions (see next bullet).
+    - The AAD Admin of tenant **T1** explicitly grants permissions to the application **App**. From this moment on, when users in tenant **T1** get an AAD token for **App**, it will contain permission **P1**.
+    - When users in tenant **T2** get an AAD token for application **App**, the token does not contain any permissions - because the admin of tenant **T2** did not yet grant permissions to **App**. </br>The procedure of granting permission must be performed **per tenant** and **per application**.
+    - The application **App** has its registration changed to now require permissions **P1** and **P2**.
+    - When users in tenant **T1** get an AAD token for **App**, it only contains permission **P1**. Permissions granted to an application are recorded as snapshots of what was granted - </br>they **do not change automatically** after the application registration (permission) changes.
+    - The admin of tenant **T2** grants permissions **P1** and **P2** to the application **App**. </br>From this moment on, when users in tenant **T2** get AAD token for **App**, the token will contain permissions **P1** and **P2**.
 
-**Note**: for the same application (<b class=blue>App</b>), the AAD token for the application in tenant <b class=green>T1</b> and that for the application in tenant <b class=green>T2</b> contains different permissions, since each tenant admin has granted different permissions to the application (<b class=blue>App</b>).
+**Note**: for the same application (**App**), the AAD token for the application in tenant **T1** and that for the application in tenant **T2** contains different permissions, since each tenant admin has granted different permissions to the application (**App**).
 
-- To make <b class=blue>App</b> work again in tenant <b class=green>T1</b>, the admin of tenant <b class=green>T1</b> must explicitly grant permissions <b class=red>P1</b> and <b class=red>P2</b> to the application (<b class=blue>App</b>).
+- To make **App** work again in tenant **T1**, the admin of tenant **T1** must explicitly grant permissions **P1** and **P2** to the application (**App**).
 
 ## Register an Application in v2.0 endpoint
 
