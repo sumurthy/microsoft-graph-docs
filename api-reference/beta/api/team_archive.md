@@ -28,7 +28,13 @@ POST /groups/{id}/team/archive
 | Authorization  | Bearer {token}. Required.  |
 
 ## Request body
-Do not supply a request body for this method.
+In the request, you may _optionally_ include the `shouldSetSpoSiteReadOnlyForMembers` parameter in a JSON body, as follows.
+```JSON
+{
+    "shouldSetSpoSiteReadOnlyForMembers": true
+}
+```
+This optional parameter defines whether to set permissions for team members to read-only on the Sharepoint Online site associated with the team. Setting it to false or omitting the body altogether will result in this step being skipped.
 
 ## Response
 
