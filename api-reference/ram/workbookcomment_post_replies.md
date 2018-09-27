@@ -23,11 +23,11 @@ POST /workbook/comments/{id}/replies
 | Workbook-Session-Id  | Workbook session Id that determines if changes are persisted or not. Optional.|
  
 ## Request body
-In the request body, supply a JSON representation of [WorkbookComment](../resources/workbookcomment.md) object.
+In the request body, supply a JSON representation of [WorkbookComment](workbookcomment.md) object.
  
 ## Response
  
-If successful, this method returns `201 Created` response code and [WorkbookComment](../resources/workbookcomment.md) object in the response body.
+If successful, this method returns `201 Created` response code and [WorkbookComment](workbookcomment.md) object in the response body.
  
 ## Example
 ##### Request
