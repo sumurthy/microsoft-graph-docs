@@ -7,8 +7,8 @@ Represents a comment associated with the workbook.
  
 | Method                             | Return Type |Description|
 |:---------------|:--------|:----------|
-|[Get Comment](../api/comment_get.md) | [WorkbookComment](Comment.md) |Read properties of Comment object.|
-|[Create reply](../api/workbookcomment_post_replies.md) |[WorkbookComment](workbookcomment.md)| Create a new reply on the comment thread.|
+|[Get Comment](comment_get.md) | [WorkbookComment](workbookcommennt.md) |Read properties of Comment object.|
+|[Create reply](workbookcomment_post_replies.md) |[WorkbookComment](workbookcomment.md)| Create a new reply on the comment thread.|
  
 ## Properties
 | Property             | Type              |Description|
