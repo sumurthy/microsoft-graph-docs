@@ -37,7 +37,7 @@ Here is an example of the request.
   "name": "create_reply"
 }-->
 ```http
-POST https://graph.microsoft.com/v1.0/me/drive/items/{id}/workbook/comments/123456789/replies
+POST https://graph.microsoft.com/v1.0/me/drive/items/{id}/workbook/comments/{id}/replies
 Content-type: application/json
 Content-length: 81
  
