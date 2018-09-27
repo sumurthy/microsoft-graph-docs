@@ -9,7 +9,7 @@ Represents a comment associated with the workbook.
 |:---------------|:--------|:----------|
 |[Get Comment](comment_get.md) | [WorkbookComment](workbookcomment.md) |Read properties of Comment object.|
 |[Create reply](workbookcomment_post_replies.md) |[WorkbookComment](workbookcomment.md)| Create a new reply on the comment thread.|
-|[List replies](workbook_list_comments.md.md) |Collection of [WorkbookComment](workbookcomment.md)| Get replies associated with the comment thread.|
+|[List replies](workbook_list_comments.md) |Collection of [WorkbookComment](workbookcomment.md)| Get replies associated with the comment thread.|
  
  
  
