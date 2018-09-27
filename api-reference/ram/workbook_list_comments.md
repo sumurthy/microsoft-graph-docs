@@ -1,4 +1,4 @@
-# List columns
+# List WorkbookComments
 
 Retrieve a list of workbook comment objects.
 
@@ -30,7 +30,7 @@ Do not supply a request body for this method.
 
 ## Response
 
-If successful, this method returns a `200 OK` response code and collection of [WorkbookComment](../resources/workbookComment.md) objects in the response body.
+If successful, this method returns a `200 OK` response code and collection of [WorkbookComment](workbookcomment.md) objects in the response body.
 
 ## Example
 ##### Request
