@@ -17,7 +17,7 @@ Here is a JSON representation of the resource
 {
   "names": [{"@odata.type": "microsoft.graph.workbookNamedItem"}],
   "tables": [{"@odata.type": "microsoft.graph.workbookTable"}],
-  "worksheets": [{"@odata.type": "microsoft.graph.workbookWorksheet"}]
+  "worksheets": [{"@odata.type": "microsoft.graph.workbookWorksheet"}],
   "comments": [{"@odata.type": "microsoft.graph.workbookComment"}]
 }
 ```
@@ -34,8 +34,5 @@ None
 ## Relationships
 | Relationship | Type     |Description|
 |:---------------|:--------|:----------|
-|names|[WorkbookNamedItem](nameditem.md) collection|Represents a collection of workbook scoped named items (named ranges and constants). Read-only.|
-|tables|[WorkbookTable](table.md) collection|Represents a collection of tables associated with the workbook. Read-only.|
-|worksheets|[WorkbookWorksheet](worksheet.md) collection|Represents a collection of worksheets associated with the workbook. Read-only.|
 |**comments**|[WorkbookComment](workbookcomment.md) collection|Represents a collection of comments associated with the workbook. Read-only.|
 ```
