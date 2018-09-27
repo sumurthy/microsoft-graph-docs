@@ -56,10 +56,8 @@ Content-type: application/json
 Content-length: 126
 
 {
-  {
     "id": 98,
     "content": "conntent-value",
     "contentType": "conntentType-value"
-  }
 }
 ```
