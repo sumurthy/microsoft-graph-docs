@@ -37,8 +37,7 @@ Here is a JSON representation of the resource.
   "id": "String (identifier)",
   "name": "String",
   "content": "String",
-  "contentType": "String",
-  "parentId": "String"
+  "contentType": "String"
 }
  
 ```
