@@ -1,4 +1,4 @@
-# List columns
+# Get a WorkbookComment
 
 Retrieve a workbook comment objects.
 
