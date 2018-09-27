@@ -1,0 +1,27 @@
+<edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" Version="4.0">
+<edmx:DataServices>
+  <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="microsoft.graph">
+    <EnumType Name="commentFormatType">
+      <Member Name="plain" Value="0"/>
+      <Member Name="markdown" Value="1"/>
+      <Member Name="delta" Value="2"/>
+    </EnumType>
+    <EntityType Name="driveItem" BaseType="microsoft.graph.baseItem" OpenType="true">
+      <NavigationProperty Name="workbook" Type="microsoft.graph.workbook" ContainsTarget="true"/>
+    </EntityType>
+      <EntityType Name="workbook" BaseType="microsoft.graph.entity">
+      <NavigationProperty Name="comments" Type="microsoft.graph.workbookComment" ContainsTarget="true"/>
+    </EntityType>
+    <EntityType Name="comment" BaseType="microsoft.graph.entity">
+      <Property Name="content" Type="Edm.String"/>                          
+      <Property Name="parentId" Type="Edm.String"/>                        
+      <Property Name="formatType" Type="microsoft.graph.commentFormatType"/>                           
+      <NavigationProperty Name="replies" Type="microsoft.graph.workbookComment" ContainsTarget="true"/>
+    </EntityType>
+    <EntityContainer Name="GraphService">
+     <EntitySet Name="drives" EntityType="microsoft.graph.drive">
+     </EntitySet>
+    </EntityContainer>
+  </Schema>
+</edmx:DataServices>
+</edmx:Edmx>
