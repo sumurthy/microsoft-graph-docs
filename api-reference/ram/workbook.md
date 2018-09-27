@@ -29,7 +29,7 @@ None
  
 | Method       | Return Type  |Description|
 |:---------------|:--------|:----------|
-|[**List comments**](../api/workbook_list_comments.md) |[WorkbookComment](workbookcomment.md) collection| Get a comment object collection.| 
+|[**List comments**](workbook_list_comments.md) |[WorkbookComment](workbookcomment.md) collection| Get a comment object collection.| 
  
 ## Relationships
 | Relationship | Type     |Description|
